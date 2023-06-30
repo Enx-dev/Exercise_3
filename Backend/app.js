@@ -24,8 +24,19 @@ const persons = [
   },
 ];
 
+const number_of_persons = persons.length;
+const today = new Date();
+// get todays date
 app.use("/api/persons", (req, res) => {
   res.json(persons);
+});
+
+app.use("/info", (req, res) => {
+  res.send(`<div>
+    <p>Phonebook has info for ${number_of_persons} persons</p>
+    <p>${today}</p>
+    </div>
+    `);
 });
 
 const PORT = 3001;
