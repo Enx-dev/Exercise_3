@@ -27,6 +27,13 @@ const persons = [
 const number_of_persons = persons.length;
 const today = new Date();
 // get todays date
+app.use("/api/persons/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const person = persons.find((person) => person.id === id);
+  if (person) return res.json(person);
+  res.status(201).json("not found").end();
+});
+
 app.use("/api/persons", (req, res) => {
   res.json(persons);
 });
