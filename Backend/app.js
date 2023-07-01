@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
 
-const persons = [
+let persons = [
   {
     id: 1,
     name: "Arto Hellas",
@@ -24,6 +25,11 @@ const persons = [
   },
 ];
 
+const generateId = () => {
+  const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0;
+  return maxId + 1;
+};
+
 const number_of_persons = persons.length;
 const today = new Date();
 // get todays date
@@ -45,7 +51,47 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(204).end();
 });
 
-app.use("/info", (req, res) => {
+app.post("/api/person", (req, res) => {
+  const body = req.body;
+  console.log(body);
+  if (!body) {
+    return res.status(400).json({
+      error: "content missing",
+    });
+  }
+  if (!body.name) {
+    res.status(400).json({
+      error: "name field missing",
+    });
+  }
+  if (!body.number) {
+    res.status(400).json({
+      error: "number field missing",
+    });
+  }
+
+  persons.map((person) => {
+    if (person.name === body.name) {
+      res.status(401).json({
+        error: "name already exists",
+      });
+      res.end();
+    }
+  });
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    important: body.important || false,
+    id: generateId(),
+  };
+
+  persons = persons.concat(person);
+
+  res.json(person);
+});
+
+app.post("/info", (req, res) => {
   res.send(`<div>
     <p>Phonebook has info for ${number_of_persons} persons</p>
     <p>${today}</p>
